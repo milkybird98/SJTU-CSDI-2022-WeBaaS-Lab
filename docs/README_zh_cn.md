@@ -2,24 +2,15 @@
 
 [English docs](../README.md)
 
-[在线预览](http://182.254.231.203:3000/)(用户名:blue,密码:huimin)
+上海交通大学 CSDI 2022 年 WeBaaS 课程实验。一个 WeBaaS + Vue 的即时聊天室。
 
-## 界面一瞥
+基于项目 [vueSocketChatroom]（https://github.com/Chanran/vueSocketChatroom）。
 
-- 登录页
+在原项目的基础上修改了数据通信逻辑和部分界面配色。
 
-  ![login page](./login.png)
+纯粹的前端架构，前端页面通过作为代理服务器和静态服务器的本地 Express 服务器与 WeBaaS 数据库通信。
 
-- 群聊页
-
-  ![group chat page](./group_chat.png)
-
-- 其他人列表
-  ![others](./others.png)
-
-- 私聊页
-
-  ![private chat](./private_chat.png)
+利用 WeBaaS 数据库的订阅通知机制获取新用户和新消息，并通过心跳机制维护通知 websocket 存活。
 
 ## 安装依赖
 
