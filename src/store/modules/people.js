@@ -8,6 +8,7 @@ const initialState = {
   user: {
     username: '',
     sessionId: '',
+    roomID: '',
   },
 };
 
@@ -23,7 +24,7 @@ const actions = {
   getOthers({ commit }) {
     // 开始异步请求，展示loading动画
     commit(types.START_LOADING);
-    api.getOthers(
+    return api.getOthers(
       (data) => {
         commit(types.GET_OTHERS_SUCCESS, data);
         // 关闭loading

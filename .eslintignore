@@ -1,2 +1,4 @@
 build/*.js
 config/*.js
+src/proto/proto.js
+static/bundle.js

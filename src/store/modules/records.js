@@ -15,7 +15,7 @@ const actions = {
   // 得到群聊聊天记录
   getRecords({ commit }) {
     commit(types.START_LOADING);
-    api.getRecords(
+    return api.getRecords(
       (data) => {
         commit(types.GET_RECORDS_SUCCESS, data);
         // 关闭loading

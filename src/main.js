@@ -7,7 +7,21 @@ import { AlertPlugin, ConfirmPlugin } from 'vux';
 import router from './router';
 import store from './store';
 import App from './App';
+import * as DBrequest from './api/request';
 
+// cheat eslint
+console.log(DBrequest);
+
+let ctx = {};
+ctx.appID = 'deadbeaf';
+ctx.myselfID = undefined;
+ctx.chatPeopleList = [];
+ctx.peopleNum = undefined;
+ctx.othersDataCache = [];
+ctx.peopleSocket = undefined;
+ctx.peopleNotifyID = undefined;
+
+window.ctx = ctx;
 
 Vue.prototype.$socketIoClient = window.io; // 将socket client赋给Vue实例
 Vue.use(VueRouter); // 使用vue-router

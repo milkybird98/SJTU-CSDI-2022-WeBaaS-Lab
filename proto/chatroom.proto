@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package chatroom;
+import 'record_metadata_options.proto';
+
+message ChatMessage {
+    string uuid = 1 [ (webaas.db.record.field).primary_key = true ];
+    string userID = 2;
+    string content = 3;
+    string privateID = 4;
+    string date = 5;
+}
+
+message ChatPerson {
+    string userID = 1 [(webaas.db.record.field).primary_key = true];
+    string userName = 2 ;
+    string avatar = 3;
+    string preUUID = 4;
+    string msgNum = 5;
+}
+
+message ChatroomStatus {
+    string roomID = 1 [ (webaas.db.record.field).primary_key = true ];
+    string peopleNum = 2;
+}

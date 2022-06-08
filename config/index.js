@@ -32,6 +32,27 @@ module.exports = {
         target: 'http://localhost:3000',
         secure: false
       },
+      '/webaas/*': {
+        target: 'http://202.120.40.82:11232',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/webaas/' : '/'
+        },
+      },
+      '/webaas/record/*': {
+        target: 'http://202.120.40.82:11232',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/webaas/record/' : '/record/'
+        },
+      },
+      '/webaas/query/*': {
+        target: 'http://202.120.40.82:11232',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/webaas/query/' : '/query/'
+        },
+      },
       '/socket.io': {
         target: 'http://localhost:3000',
         ws: true,

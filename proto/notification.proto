@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package notification;
+
+message NotificationMessage {
+    string notification_id = 1 [(webaas.db.record.field).primary_key = true];
+    string appID = 2;
+    string schema_name = 3;
+    repeated string record_keys = 4;
+}

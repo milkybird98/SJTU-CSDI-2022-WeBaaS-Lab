@@ -1,5 +1,5 @@
 <template>
-  <div class="avatar">
+  <div class="avatar" :style="{'background-color': background}">
     {{shortName}}
   </div>
 </template>

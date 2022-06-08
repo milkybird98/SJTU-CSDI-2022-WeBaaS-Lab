@@ -2,7 +2,8 @@ import {
   XInput,
   XButton,
   Cell,
-  Group } from 'vux';
+  Group,
+} from 'vux';
 
 import { login } from '../../api/api';
 
@@ -17,16 +18,19 @@ export default {
   data() {
     return {
       username: '',
+      appID: '',
     };
   },
   methods: {
     login() {
       let username = this.username;
-      if (this.username.trim() !== '') {
-        login(this, username);
+      let appID = this.appID;
+      if (this.username.trim() !== '' &&
+        this.appID.trim() !== '') {
+        login(this, username, appID);
       } else {
         this.$vux.alert.show({
-          title: '用户名不能为空',
+          title: '用户名/房间号不能为空',
         });
       }
     },

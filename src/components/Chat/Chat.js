@@ -12,15 +12,19 @@ import {
   XInput,
   Grid,
   GridItem,
-  Group } from 'vux';
+  Group,
+} from 'vux';
 import {
   mapActions,
-  mapGetters } from 'vuex';
+  mapGetters,
+} from 'vuex';
 import moment from 'moment';
 
 import GroupChat from '../GroupChat';
 import PrivateChat from '../PrivateChat';
 import { logout } from '../../api/api';
+import * as serverapi from '../../api/serverapi';
+
 // const socket = null;
 
 export default {
@@ -52,69 +56,80 @@ export default {
     };
   },
   mounted() {
-    const socket = window.io('/');
+    // const socket = window.io('/');
     const that = this;
     // 告诉socket server该用户登录的动作
-    let time = moment().format('YYYY/MM/DD HH:mm:ss');
-    socket.emit('login', {
-      time,
-    });
+    // let time = moment().format('YYYY/MM/DD HH:mm:ss');
+    // let ctx = window.ctx;
+
+    // socket.emit('login', {
+    //   time,
+    // });
     // 监听socket server其他用户登录的消息
-    socket.on('someOneLogin', ({ user, msg }) => {
-      that.addPeople({
-        label: user.username,
-        value: user.sessionId,
-        msgs: [],
-      });
-      that.addRecord({
-        username: '',
-        sessionId: '',
-        tip: true,
-        msg,
-        time,
-      });
-      console.log(msg);
-    });
+    // socket.on('someOneLogin', ({ user, msg }) => {
+    //   that.addPeople({
+    //     label: user.username,
+    //     value: user.sessionId,
+    //     msgs: [],
+    //   });
+    //   that.addRecord({
+    //     username: '',
+    //     sessionId: '',
+    //     tip: true,
+    //     msg,
+    //     time,
+    //   });
+    //   console.log(msg);
+
     // 监听socket server 其他用户退出的消息
-    socket.on('quit', (data) => {
-      that.addRecord({
-        username: '',
-        sessionId: '',
-        tip: true,
-        msg: data.msg,
-        time: data.time,
-      });
-    });
+    // socket.on('quit', (data) => {
+    //   that.addRecord({
+    //     username: '',
+    //     sessionId: '',
+    //     tip: true,
+    //     msg: data.msg,
+    //     time: data.time,
+    //   });
+    // });
     // 监听socket server 的广播
-    socket.on('broadcast', (data) => {
-      if (data.user.sessionId !== that.user.sessionId) {
-        that.addRecord({
-          username: data.user.username,
-          sessionId: data.user.sessionId,
-          msg: data.msg,
-          time: data.time,
-        });
-      }
-    });
+
+    // socket.on('broadcast', (data) => {
+    //   if (data.user.sessionId !== that.user.sessionId) {
+    //     that.addRecord({
+    //       username: data.user.username,
+    //       sessionId: data.user.sessionId,
+    //       msg: data.msg,
+    //       time: data.time,
+    //     });
+    //   }
+    // });
     // 监听私聊信息
-    socket.on('private', (data) => {
-      console.log(data);
-      for (let i = 0; i < this.people.length; i += 1) {
-        if (this.people[i].value === data.user.sessionId) {
-          this.addPrivateRecord(
-            {
-              privateGroupIndex: i,
-              sessionId: data.user.sessionId,
-              username: data.user.username,
-              msg: data.msg,
-              time: data.time,
-            });
-        }
-      }
-    });
+    // socket.on('private', (data) => {
+    //   console.log(data);
+    //   for (let i = 0; i < this.people.length; i += 1) {
+    //     if (this.people[i].value === data.user.sessionId) {
+    //       this.addPrivateRecord(
+    //         {
+    //           privateGroupIndex: i,
+    //           sessionId: data.user.sessionId,
+    //           username: data.user.username,
+    //           msg: data.msg,
+    //           time: data.time,
+    //         });
+    //     }
+    //   }
+    // });
     // 聊天室成员
-    this.getOthers();
-    this.getRecords();
+    serverapi.setupChatroomStatusSocket(that);
+    this.getOthers()
+      .then(() => {
+        console.log('getOthers fin');
+        this.getRecords()
+          .then(() => {
+            serverapi.setupChatPeopleSocket(that.addRecord);
+            serverapi.wsHeartBeat();
+          });
+      });
     this.getUser();
   },
   computed: {
@@ -138,49 +153,17 @@ export default {
       'addPrivateRecord',
     ]),
     sendMsg() {
-      const socket = window.io('/');
+      const that = this;
+      let time = moment().format('YYYY/MM/DD HH:mm:ss');
       if (this.message.trim() !== '') {
-        // 非群聊
-        if (this.talkingTo !== -1) {
-          let sessionId = this.people[this.talkingTo].value;
-          let time = moment().format('YYYY/MM/DD HH:mm:ss');
-          // 发送私聊消息
-          socket.emit('private', {
-            msg: this.message,
-            toSessionId: sessionId,
-            time,
-          });
-          this.addPrivateRecord(
-            {
-              privateGroupIndex: this.talkingTo,
-              username: this.user.username,
-              sessionId: this.user.sessionId,
-              msg: this.message,
-              time,
-            });
-          // 清除输入框
-          this.message = '';
-
-        // 群聊
-        } else {
-          // 发送群聊消息
-          let time = moment().format('YYYY/MM/DD HH:mm:ss');
-          socket.emit('broadcast', {
+        serverapi.sendMsg(this.message, (data) => {
+          that.addRecord({
+            username: data.userName,
+            sessionId: data.userID,
+            tip: false,
             msg: this.message,
             time,
           });
-          this.addRecord({
-            username: this.user.username,
-            sessionId: this.user.sessionId,
-            msg: this.message,
-            time,
-          });
-          // 清除输入框
-          this.message = '';
-        }
-      } else {
-        this.$vux.alert.show({
-          title: '发送消息不能为空！',
         });
       }
     },

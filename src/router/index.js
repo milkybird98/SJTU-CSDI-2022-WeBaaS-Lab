@@ -12,7 +12,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/chat',
+      redirect: '/login',
     },
     {
       path: '/chat',
@@ -26,9 +26,9 @@ export default new Router({
       path: '/login',
       name: 'Login',
       component: Login,
-      beforeEnter: (to, from, next) => {
-        checkLogin(to, from, next, '/chat', '');
-      },
+      // beforeEnter: (to, from, next) => {
+      //   checkLogin(to, from, next, '/chat', '');
+      // },
     },
     {
       path: '*',

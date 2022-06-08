@@ -1,0 +1,184 @@
+/*
+ * record_metadata.proto
+ *
+ * This source file is part of the FoundationDB open source project
+ *
+ * Copyright 2015-2018 Apple Inc. and the FoundationDB project authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ syntax = "proto3";
+
+ package webaas.db.record;
+ import "google/protobuf/descriptor.proto";
+ import "google/protobuf/any.proto";
+ 
+ message DataStoreInfo {
+   int32 formatVersion = 1;
+   int32 metaDataversion = 2;
+   int32 userVersion = 3;
+   KeyExpression record_count_key = 4;
+   uint64 lastUpdateTime = 5;
+   bool omit_unsplit_record_suffix = 6;
+   bool cacheable = 7;
+ 
+   // Compatible with map<string, bytes> on the wire
+   message UserFieldEntry {
+     string key = 1;
+     bytes value = 2;
+   }
+   repeated UserFieldEntry user_field = 8;
+ }
+ 
+ message Index {
+   repeated string record_type = 1;
+   string name = 2;
+   KeyExpression root_expression = 3;
+   bytes subspace_key = 4;
+   int32 last_modified_version = 5;
+   string type = 6;
+   repeated Option options = 7;
+   message Option {
+     string key = 1;
+     string value = 2;
+   };
+   int32 added_version = 8;
+   bool unique = 9;
+ }
+ 
+ message RecordType {
+   string name = 1;
+   KeyExpression primary_key = 2;
+   int32 since_version = 3;
+   google.protobuf.Any explicit_key = 4;
+ }
+ 
+ message FormerIndex {
+   string former_name = 3;
+   bytes subspace_key = 5;
+   int32 removed_version = 6;
+   int32 added_version = 10;
+ }
+ 
+ message MetaData {
+   google.protobuf.DescriptorProto record_descriptor = 1;
+   repeated Index indexes = 2;
+   repeated RecordType record_types = 3;
+   bool split_long_records = 4;
+   int32 version = 5;
+   repeated FormerIndex former_indexes = 6;
+   bool store_record_versions = 7;
+   int64 subspace_key_counter = 9;
+   bool uses_subspace_key_counter = 10;
+   repeated JoinedRecordType joined_record_types = 11;
+   
+ }
+ 
+ message Then {
+   repeated KeyExpression child = 1;
+ }
+ 
+ message List {
+   repeated KeyExpression child = 1;
+ }
+ 
+ message Field {
+   string field_name = 1;
+   FanType fan_type = 2;
+   enum FanType {
+     FAN_ERROR = 0;
+     SCALAR = 1;
+     FAN_OUT = 2;
+     CONCATENATE = 3;
+   }
+   NullInterpretation nullInterpretation = 3;
+   enum NullInterpretation {
+     NULL_ERROR = 0;
+     NOT_UNIQUE = 1; // Missing values allowed multiple times in unique index
+     UNIQUE = 2;     // Missing values treated like null value in unique index
+     NOT_NULL = 3;   // Missing values are the default for the type, not null
+   }
+ }
+ 
+ message Nesting {
+   Field parent = 1;
+   KeyExpression child = 2;
+ }
+ 
+ message Grouping {
+   KeyExpression whole_key = 1;
+   int32 grouped_count = 3;
+ }
+ 
+ message KeyWithValue {
+   KeyExpression inner_key = 1;
+   int32 split_point = 2;
+ }
+ 
+ message Split {
+   KeyExpression joined = 1;
+   int32 split_size = 2;
+ }
+ 
+ message Empty {
+ }
+ 
+ message Version {
+ }
+ 
+ message RecordTypeKey {
+ }
+ 
+ message Function {
+   string name = 1;
+   KeyExpression arguments = 2;
+ }
+ 
+ message KeyExpression {
+   oneof expression{
+    Then then = 1;
+    Nesting nesting = 2;
+    Field field = 3;
+    Grouping grouping = 4;
+    Empty empty = 5;
+    Split split = 6;
+    Version version = 7;
+    google.protobuf.Any value = 8;
+    Function function = 9;
+    KeyWithValue key_with_value = 10;
+    RecordTypeKey record_type_key = 11;
+    List list = 12;
+  }
+ }
+ 
+ message JoinedRecordType {
+   string name = 1;
+   google.protobuf.Any record_type_key = 4;
+ 
+   message JoinConstituent {
+     string name = 1;
+     string record_type = 2;
+     bool outer_joined = 3;
+   }
+ 
+   message Join {
+     string left = 1;
+     KeyExpression left_expression = 2;
+     string right = 3;
+     KeyExpression right_expression = 4;
+   }
+ 
+   repeated JoinConstituent join_constituents = 10;
+   repeated Join joins = 11;
+ }
+ 

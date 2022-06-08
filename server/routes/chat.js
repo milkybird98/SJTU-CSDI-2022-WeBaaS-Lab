@@ -85,21 +85,21 @@ router.get('/testlogin', (req, res) => {
 
 router.get('/records', (req, res) => {
   records.getAllRecords()
-  .then((docs) => {
-    console.log(docs);
-    res.json({
-      code: 200,
-      msg: 'success',
-      data: docs,
+    .then((docs) => {
+      console.log(docs);
+      res.json({
+        code: 200,
+        msg: 'success',
+        data: docs,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json({
+        code: '205',
+        msg: 'get records error',
+      });
     });
-  })
-  .catch((err) => {
-    console.log(err);
-    res.json({
-      code: '205',
-      msg: 'get records error',
-    });
-  });
 });
 
 router.get('/user', (req, res) => {
