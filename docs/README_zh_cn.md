@@ -4,7 +4,7 @@
 
 上海交通大学 CSDI 2022 年 WeBaaS 课程实验。一个 WeBaaS + Vue 的即时聊天室。
 
-基于项目 [vueSocketChatroom]（https://github.com/Chanran/vueSocketChatroom）。
+基于项目 [vueSocketChatroom](https://github.com/Chanran/vueSocketChatroom)
 
 在原项目的基础上修改了数据通信逻辑和部分界面配色。
 
