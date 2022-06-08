@@ -1,26 +1,16 @@
-# socket.io immediate chat room
+# WeBaaS + Vue immediate chat room
 
 [中文文档](./docs/README_zh_cn.md)
 
-[online preview](http://182.254.231.203:3000/)(username: blue, password: huimin)
+SJTU CSDI 2022 WeBaaS Course Lab. A WeBaaS + Vue immediate chat room.
 
-## glance
+Base on the project [vueSocketChatroom](https://github.com/Chanran/vueSocketChatroom).
 
-- login page
+Modified data communication logic and part of the interface color scheme.
 
-  ![login page](./docs/login.png)
+Pure front-end architecture, front-end pages communicate with WeBaaS database through local express server that as proxy server and static server.
 
-- group chat page
-
-  ![group chat page](./docs/group_chat.png)
-
-- others list
-
-  ![others](./docs/others.png)
-
-- private chat page
-
-  ![private chat](./docs/private_chat.png)
+Get new users and new messages using the WeBaaS database's subscription-notification mechanism, and maintain notification websocket inventory via heartbeat mechanism.
 
 ## install dependencies
 
@@ -51,7 +41,6 @@ npm install -d
 
 ```
 npm run dev
-npm run server # open another terminal
 ```
 
 visit [http://localhost:8080/](http://localhost:8080/)
